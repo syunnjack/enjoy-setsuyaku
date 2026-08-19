@@ -36,7 +36,9 @@ return [
     ],
 
 
-    'ga_measurement_id' => env('GA_MEASUREMENT_ID'),
-    'google_site_verification' => env('GOOGLE_SITE_VERIFICATION'),
-    'adsense_client' => env('ADSENSE_CLIENT'),
+    // 測定IDはHTMLに出る公開情報。デプロイ時に .env へ空文字が
+    // 書かれても既定値に落ちるよう ?: で受ける。
+    'ga_measurement_id' => env('GA_MEASUREMENT_ID') ?: 'G-ESKE961TTV',
+    'google_site_verification' => env('GOOGLE_SITE_VERIFICATION') ?: null,
+    'adsense_client' => env('ADSENSE_CLIENT') ?: null,
 ];

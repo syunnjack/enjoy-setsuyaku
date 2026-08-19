@@ -82,6 +82,19 @@ class SitePagesTest extends TestCase
         $this->assertSame(52, Kakei::ranking('utilities')->count());
     }
 
+    public function test_GA4の測定タグが全ページに出る(): void
+    {
+        $id = config('services.ga_measurement_id');
+
+        $this->assertNotEmpty($id, '測定IDが設定されていません');
+
+        foreach (['/', '/articles', '/cities', '/privacy'] as $path) {
+            $this->get($path)
+                ->assertOk()
+                ->assertSee('gtag/js?id='.$id, false);
+        }
+    }
+
     public function test_サイトマップに記事と都市が載る(): void
     {
         $this->get('/sitemap.xml')
