@@ -14,9 +14,11 @@
     数日以内に返信いたします。
   </p>
 
+  @php $contact = config('mail.contact_address'); @endphp
+
   <div class="card-soft p-3 mb-4">
     <div class="small text-muted">メールアドレス</div>
-    <div class="fs-5">{{ config('mail.contact_address') }}</div>
+    <div class="fs-5"><a href="mailto:{{ $contact }}">{{ $contact }}</a></div>
   </div>
 
   <h2 class="h6">お送りいただく際のお願い</h2>

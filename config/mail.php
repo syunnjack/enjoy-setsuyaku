@@ -123,5 +123,7 @@ return [
     | 画面に出す連絡先。フォームは置かず、メールで受ける。
     */
 
-    'contact_address' => env('CONTACT_ADDRESS', 'info@enjoy-setsuyaku.jp'),
+    // デプロイ時に .env へ CONTACT_ADDRESS= と空で書かれることがある。
+    // env() の既定値は「キーが無いとき」しか効かないため、?: で受ける。
+    'contact_address' => env('CONTACT_ADDRESS') ?: 'info@enjoy-setsuyaku.jp',
 ];

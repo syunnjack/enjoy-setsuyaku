@@ -50,6 +50,20 @@ class SitePagesTest extends TestCase
             ->assertSee('Cookie');
     }
 
+    public function test_お問い合わせ先が空欄にならない(): void
+    {
+        // デプロイ時に .env へ CONTACT_ADDRESS= と空で書かれ、
+        // 連絡先が空欄のまま公開されていたことがある。
+        config(['mail.contact_address' => '']);
+
+        $this->assertNotSame('', (string) config('mail.contact_address') ?: 'info@enjoy-setsuyaku.jp');
+
+        $this->get('/contact')
+            ->assertOk()
+            ->assertSee('@')
+            ->assertSee('mailto:', false);
+    }
+
     public function test_都市ページが全国平均との差を出す(): void
     {
         $this->get('/cities/tokyo')
