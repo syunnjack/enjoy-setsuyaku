@@ -62,8 +62,79 @@
   </div>
 
   <p class="small text-muted">
-    出典: <a href="{{ \App\Support\Kakei::sourceUrl() }}" rel="nofollow noopener" target="_blank">{{ \App\Support\Kakei::sourceLabel() }}</a><br>
+    出典: <a href="{{ \App\Support\Kakei::sourceUrl() }}" rel="nofollow noopener" target="_blank">{{ \App\Support\Kakei::sourceLabel() }}</a>
+  </p>
+
+  <h2 class="h5 fw-bold mt-4">この表から読み取れること</h2>
+
+  @if($rank !== null)
+    <p>
+      {{ $city['name'] }}の消費支出は月{{ number_format($city['spending']['total']) }}円で、
+      掲載している{{ $cityCount }}都市のうち<strong>{{ $rank }}番目</strong>に多い水準です。
+      全国平均（{{ number_format($national['total']) }}円）との差は
+      {{ ($city['spending']['total'] - $national['total']) >= 0 ? '+' : '' }}{{ number_format($city['spending']['total'] - $national['total']) }}円でした。
+    </p>
+  @endif
+
+  @if(count($notable['higher']) > 0)
+    <p>
+      全国平均より多いのは、
+      @foreach($notable['higher'] as $i => $row){{ $i > 0 ? '、' : '' }}<a href="{{ route('items.show', $row['key']) }}">{{ $row['name'] }}</a>（+{{ number_format($row['diff']) }}円）@endforeach
+      です。
+    </p>
+  @endif
+
+  @if(count($notable['lower']) > 0)
+    <p>
+      逆に少ないのは、
+      @foreach($notable['lower'] as $i => $row){{ $i > 0 ? '、' : '' }}<a href="{{ route('items.show', $row['key']) }}">{{ $row['name'] }}</a>（{{ number_format($row['diff']) }}円）@endforeach
+      です。
+    </p>
+  @endif
+
+  @if($perPerson !== null && $nationalPerPerson !== null)
+    <h2 class="h5 fw-bold mt-4">世帯人員をならして比べる</h2>
+    <p>
+      支出の総額は、世帯に何人いるかで大きく変わります。
+      {{ $city['name'] }}の平均世帯人員は{{ $city['householdSize'] }}人、全国平均は{{ \App\Support\Kakei::data()['nationalHouseholdSize'] }}人です。
+      1人あたりに直すと、{{ $city['name'] }}は月{{ number_format($perPerson) }}円、全国平均は月{{ number_format($nationalPerPerson) }}円になります。
+      @php
+        $totalAbove = $city['spending']['total'] > $national['total'];
+        $perAbove = $perPerson > $nationalPerPerson;
+      @endphp
+      @if($perPerson === $nationalPerPerson)
+        1人あたりでは全国平均とほぼ同じです。
+      @elseif($totalAbove && $perAbove)
+        総額でも1人あたりでも、全国平均を上回っています。
+      @elseif(! $totalAbove && ! $perAbove)
+        総額でも1人あたりでも、全国平均を下回っています。
+      @elseif(! $totalAbove && $perAbove)
+        <strong>総額では全国平均を下回りますが、世帯人員が少ないぶん、1人あたりでは上回っています。</strong>
+        総額の少なさが、そのまま支出の少なさを意味していない例です。
+      @else
+        <strong>総額では全国平均を上回りますが、世帯人員が多いぶん、1人あたりでは下回っています。</strong>
+        総額の多さが、そのまま支出の多さを意味していない例です。
+      @endif
+    </p>
+  @endif
+
+  @if($nearest->isNotEmpty())
+    <h2 class="h5 fw-bold mt-4">支出の水準が近い都市</h2>
+    <p>総額が近い都市と並べると、どの費目で違いが出ているかが分かります。</p>
+    <ul>
+      @foreach($nearest as $other)
+        <li>
+          <a href="{{ route('cities.show', $other['slug']) }}">{{ $other['name'] }}</a>
+          … 月{{ number_format($other['spending']['total']) }}円（世帯人員 {{ $other['householdSize'] }}人）
+        </li>
+      @endforeach
+    </ul>
+  @endif
+
+  <h2 class="h5 fw-bold mt-4">数字を見るときの注意</h2>
+  <p class="small text-muted">
     平均世帯人員・持ち家率・気候が都市ごとに違うため、差がそのまま「使いすぎ」を意味するわけではありません。
+    たとえば持ち家が多い地域は住居費が小さく出ますし、寒い地域は光熱・水道費が大きく出ます。
     差の大きい費目から、契約内容や使い方を見直す手がかりとしてお使いください。
   </p>
 

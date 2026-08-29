@@ -59,6 +59,12 @@ class PageController extends Controller
             'city' => $city,
             'national' => Kakei::national(),
             'items' => Kakei::items(),
+            'rank' => Kakei::rankOf($city),
+            'cityCount' => Kakei::ranking('total')->count(),
+            'perPerson' => Kakei::perPerson($city),
+            'nationalPerPerson' => Kakei::nationalPerPerson(),
+            'notable' => Kakei::notableItems($city),
+            'nearest' => Kakei::nearestCities($city),
         ]);
     }
 
